@@ -1,4 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
+  const socket = io(); // Połączenie z backendem
   const loginScreen = document.getElementById("login-screen");
   const chatScreen = document.getElementById("chat-screen");
   const loginBtn = document.getElementById("login-btn");
@@ -33,10 +34,16 @@ document.addEventListener("DOMContentLoaded", () => {
   sendBtn.addEventListener("click", () => {
     const message = messageInput.value.trim();
     if (message) {
-      const messageElement = document.createElement("div");
-      messageElement.textContent = `${username}: ${message}`;
-      messagesContainer.appendChild(messageElement);
+      const fullMessage = `${username}: ${message}`;
+      socket.emit("chat message", fullMessage); // Wysłanie wiadomości do serwera
       messageInput.value = "";
     }
+  });
+
+  // Odbieranie wiadomości od serwera
+  socket.on("chat message", (msg) => {
+    const messageElement = document.createElement("div");
+    messageElement.textContent = msg;
+    messagesContainer.appendChild(messageElement);
   });
 });
